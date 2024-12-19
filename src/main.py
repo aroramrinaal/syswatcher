@@ -1,11 +1,16 @@
 import typer
-
+from src.metrics.cpu import display_cpu_usage
 app = typer.Typer()
 
 @app.command("hi")
 def hi():
     """say hi to the world"""
     typer.echo("hi world")
+
+@app.command("cpu")
+def cpu():
+    """show cpu usage"""
+    display_cpu_usage()
 
 @app.command("info")
 def info():
