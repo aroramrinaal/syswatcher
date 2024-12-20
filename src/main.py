@@ -1,5 +1,6 @@
 import typer
 from src.metrics.cpu import display_cpu_usage
+from src.metrics.memory import display_memory_usage
 app = typer.Typer()
 
 @app.command("hi")
@@ -11,6 +12,11 @@ def hi():
 def cpu():
     """show cpu usage"""
     display_cpu_usage()
+
+@app.command("memory")
+def memory():
+    """Monitor memory usage."""
+    display_memory_usage()
 
 @app.command("info")
 def info():
