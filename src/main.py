@@ -1,5 +1,5 @@
 import typer
-from src.metrics.cpu import display_cpu_usage
+from src.metrics.cpu import display_cpu_usage, display_cpu_info
 from src.metrics.memory import display_memory_usage
 app = typer.Typer()
 
@@ -12,6 +12,17 @@ def hi():
 def cpu():
     """show cpu usage"""
     display_cpu_usage()
+
+@app.command("cpu-info")
+def cpu_info():
+    """Display comprehensive CPU information including:
+    - Basic CPU details (processor, architecture, cores)
+    - Frequency information (current, min, max)
+    - CPU statistics (context switches, interrupts)
+    - CPU times (user, system, idle)
+    - System load averages
+    """
+    display_cpu_info()
 
 @app.command("memory")
 def memory():
