@@ -2,6 +2,7 @@ import typer
 from src.metrics.cpu import display_cpu_usage, display_cpu_info
 from src.metrics.memory import display_memory_usage
 from src.metrics.disk import display_disk_usage, display_disk_io, display_disk_partitions
+from src.metrics.network import display_network_io, display_network_connections, display_network_speed, display_open_ports
 
 app = typer.Typer()
 
@@ -49,6 +50,46 @@ def disk_partitions():
     """List all disk partitions and their details.
     Shows mount points, file systems, and partition options."""
     display_disk_partitions()
+
+@app.command("network-io")
+def network_io():
+    """Show network interface statistics:
+    - Interface status and speed
+    - Bytes sent/received
+    - Packet counts
+    - MTU and other details
+    """
+    display_network_io()
+
+@app.command("network-connections")
+def network_connections():
+    """List all active network connections:
+    - Protocol and status
+    - Local and remote addresses
+    - Associated processes
+    - Connection states summary
+    """
+    display_network_connections()
+
+@app.command("network-speed")
+def network_speed():
+    """Monitor real-time network speed:
+    - Download and upload speeds
+    - Per-interface monitoring
+    - Total data transferred
+    Press Ctrl+C to stop monitoring.
+    """
+    display_network_speed()
+
+@app.command("ports")
+def ports():
+    """Show all open ports and associated processes:
+    - Protocol and port number
+    - Connection state
+    - Process using the port
+    - Listening ports summary
+    """
+    display_open_ports()
 
 if __name__ == "__main__":
     app()
