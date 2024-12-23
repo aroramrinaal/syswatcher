@@ -17,6 +17,20 @@ def get_per_core_usage(interval: float = 1.0) -> list:
     """Fetch the CPU usage percentage for each core."""
     return psutil.cpu_percent(interval=interval, percpu=True)
 
+def get_cpu_times_percent(interval: float = 1.0) -> dict:
+    """Fetch CPU time percentages spent in different states."""
+    cpu_times = psutil.cpu_times_percent(interval=interval)
+    return {
+        'user': cpu_times.user,
+        'system': cpu_times.system,
+        'idle': cpu_times.idle,
+        'nice': getattr(cpu_times, 'nice', 0),
+        'iowait': getattr(cpu_times, 'iowait', 0),
+        'irq': getattr(cpu_times, 'irq', 0),
+        'softirq': getattr(cpu_times, 'softirq', 0),
+        'steal': getattr(cpu_times, 'steal', 0)
+    }
+
 def get_cpu_info():
     """Get detailed CPU information."""
     cpu_info = {}
@@ -55,29 +69,108 @@ def get_cpu_info():
     return cpu_info
 
 def display_cpu_usage():
-    """Display CPU usage with a progress bar and per-core usage table."""
+    """Display comprehensive CPU usage with multiple metrics."""
+    # Get all CPU metrics
     overall_usage = get_cpu_usage()
     per_core_usage = get_per_core_usage()
-
+    cpu_times_percent = get_cpu_times_percent()
+    
+    # Overall CPU Usage Progress Bar
+    console.print("\n[bold blue]CPU Usage Overview[/bold blue]")
     with Progress(
         TextColumn("[bold cyan]Overall CPU Usage"),
-        BarColumn(bar_width=40, style="bold green"),
+        BarColumn(bar_width=50, style="bold green"),
         TextColumn("{task.percentage:>3.0f}%"),
         console=console,
     ) as progress:
         task = progress.add_task("CPU Usage", total=100)
         progress.update(task, completed=overall_usage)
         progress.refresh()
-
-    table = Table(title="Per-Core CPU Usage", show_header=True, header_style="bold magenta")
-    table.add_column("Core", style="dim", width=6)
-    table.add_column("Usage (%)", justify="right")
-
+    
+    # Create layout for side-by-side tables
+    layout = Layout()
+    layout.split_row(
+        Layout(name="left"),
+        Layout(name="right")
+    )
+    
+    # Per-Core Usage Table
+    core_table = Table(
+        title="Per-Core Usage",
+        show_header=True,
+        header_style="bold magenta",
+        title_style="bold blue",
+        box=None
+    )
+    core_table.add_column("Core", style="cyan", width=8)
+    core_table.add_column("Usage", justify="right", style="green")
+    core_table.add_column("Status Bar", justify="left", width=30)
+    
     for idx, usage in enumerate(per_core_usage, start=1):
-        table.add_row(f"Core {idx}", f"{usage}%")
-
-    panel = Panel(table, title="CPU Cores", border_style="green")
-    console.print(panel)
+        # Create a mini progress bar for each core
+        bar_length = 20
+        filled_length = int(usage * bar_length / 100)
+        bar = f"[green]{'█' * filled_length}[/green][dim]{'░' * (bar_length - filled_length)}[/dim]"
+        core_table.add_row(
+            f"Core {idx}",
+            f"{usage:>5.1f}%",
+            bar
+        )
+    
+    # CPU Times Table
+    times_table = Table(
+        title="CPU Time Distribution",
+        show_header=True,
+        header_style="bold magenta",
+        title_style="bold blue",
+        box=None
+    )
+    times_table.add_column("State", style="cyan")
+    times_table.add_column("Percentage", justify="right", style="green")
+    times_table.add_column("Bar", justify="left", width=30)
+    
+    # Add rows for each CPU time metric
+    for state, percent in cpu_times_percent.items():
+        if percent > 0:  # Only show states that are actually being used
+            bar_length = 20
+            filled_length = int(percent * bar_length / 100)
+            bar = f"[yellow]{'█' * filled_length}[/yellow][dim]{'░' * (bar_length - filled_length)}[/dim]"
+            times_table.add_row(
+                state.capitalize(),
+                f"{percent:>5.1f}%",
+                bar
+            )
+    
+    # Create panels for each section
+    core_panel = Panel(
+        core_table,
+        title="CPU Cores Activity",
+        border_style="blue",
+        padding=(1, 2)
+    )
+    times_panel = Panel(
+        times_table,
+        title="CPU Time States",
+        border_style="yellow",
+        padding=(1, 2)
+    )
+    
+    # Print everything with proper spacing
+    console.print("\n")
+    console.print(core_panel)
+    console.print("\n")
+    console.print(times_panel)
+    
+    # Print a summary footer
+    active_cores = sum(1 for usage in per_core_usage if usage > 10)  # Cores with >10% usage
+    console.print(f"\n[bold cyan]Summary:[/bold cyan] {active_cores} of {len(per_core_usage)} cores active | Overall Load: [bold green]{overall_usage:.1f}%[/bold green]")
+    
+    # Add load average if available
+    try:
+        load1, load5, load15 = psutil.getloadavg()
+        console.print(f"[dim]Load Average: 1min: {load1:.2f} | 5min: {load5:.2f} | 15min: {load15:.2f}[/dim]")
+    except:
+        pass
 
 def display_cpu_info():
     """Display comprehensive CPU information."""
