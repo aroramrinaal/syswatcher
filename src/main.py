@@ -1,11 +1,42 @@
 import typer
+from rich.console import Console
+from rich.panel import Panel
+import pyfiglet
+from typing import Optional
 from src.metrics.cpu import display_cpu_usage, display_cpu_info
 from src.metrics.memory import display_memory_usage
 from src.metrics.disk import display_disk_usage, display_disk_io, display_disk_partitions
 from src.metrics.network import display_network_io, display_network_connections, display_network_speed, display_open_ports
 from src.metrics.system import display_system_info, display_boot_time, display_battery
 
-app = typer.Typer()
+app = typer.Typer(
+    help="A comprehensive system monitoring CLI tool",
+    rich_markup_mode="rich",
+    add_completion=False,
+    no_args_is_help=False
+)
+console = Console()
+
+def display_banner():
+    """Display the styled banner for syswatcher"""
+    banner = pyfiglet.figlet_format("SysWatcher", font="slant")
+    console.print(f"\n[cyan]{banner}[/cyan]")
+    console.print("[yellow]A comprehensive system monitoring tool[/yellow]\n")
+
+@app.callback(invoke_without_command=True)
+def main(ctx: typer.Context, help: bool = typer.Option(False, "--help", "-h", is_eager=True)):
+    """
+    SysWatcher - A comprehensive system monitoring CLI tool
+    """
+    if help or ctx.invoked_subcommand is None:
+        display_banner()
+        if help:
+            console.print(ctx.get_help())
+        else:
+            console.print("[bold cyan]Available commands:[/bold cyan]")
+            console.print("\nRun [green]syswatcher COMMAND --help[/green] for detailed information about a command.\n")
+        if help:
+            raise typer.Exit()
 
 @app.command("cpu")
 def cpu():
