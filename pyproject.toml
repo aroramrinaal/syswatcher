@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "syswatcher"
 version = "0.1.1"
-description = "A comprehensive system monitoring CLI tool for CPU, Memory, Disk, and Network statistics"
+description = "A comprehensive system monitoring CLI tool for CPU, Memory, Disk, and Network statistics with rich ui"
 readme = "README.md"
 authors = [
     { name = "Mrinaal Arora", email = "aroramrinaal@gmail.com" }
@@ -25,7 +25,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: System :: Monitoring",
     "Topic :: System :: Systems Administration",
-    "Topic :: Utilities"
+    "Topic :: Utilities",
+    "Topic :: Software Development :: Libraries :: Python Modules"
 ]
 keywords = [
     "system-monitoring",
