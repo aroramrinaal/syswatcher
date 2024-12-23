@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "syswatcher"
-version = "0.1.1"
+version = "0.1.2"
 description = "A comprehensive system monitoring CLI tool for CPU, Memory, Disk, and Network statistics with rich ui"
 readme = "README.md"
 authors = [
