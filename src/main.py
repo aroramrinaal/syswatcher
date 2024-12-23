@@ -3,6 +3,7 @@ from src.metrics.cpu import display_cpu_usage, display_cpu_info
 from src.metrics.memory import display_memory_usage
 from src.metrics.disk import display_disk_usage, display_disk_io, display_disk_partitions
 from src.metrics.network import display_network_io, display_network_connections, display_network_speed, display_open_ports
+from src.metrics.system import display_system_info, display_boot_time, display_battery
 
 app = typer.Typer()
 
@@ -90,6 +91,37 @@ def ports():
     - Listening ports summary
     """
     display_open_ports()
+
+@app.command("system-info")
+def system_info():
+    """Show detailed system information:
+    - OS details and version
+    - CPU specifications
+    - Memory information
+    - System architecture
+    - Host details
+    """
+    display_system_info()
+
+@app.command("boot-time")
+def boot_time():
+    """Display system boot time and uptime:
+    - System start time
+    - Current uptime
+    - Detailed time breakdown
+    """
+    display_boot_time()
+
+@app.command("battery")
+def battery():
+    """Show battery status and details:
+    - Battery percentage
+    - Power source status
+    - Time remaining
+    - Charging status
+    For laptops and portable devices.
+    """
+    display_battery()
 
 if __name__ == "__main__":
     app()
