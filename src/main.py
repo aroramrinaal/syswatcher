@@ -5,11 +5,6 @@ from src.metrics.disk import display_disk_usage, display_disk_io, display_disk_p
 
 app = typer.Typer()
 
-@app.command("hi")
-def hi():
-    """say hi to the world"""
-    typer.echo("hi world")
-
 @app.command("cpu")
 def cpu():
     """Display real-time CPU usage metrics:
@@ -36,16 +31,6 @@ def memory():
     """Monitor memory usage."""
     display_memory_usage()
 
-@app.command("info")
-def info():
-    """show some info"""
-    typer.echo("some info")
-
-@app.command("mrinaal")
-def mrinaal():
-    """say hi to mrinaal"""
-    typer.echo("this cli app was made by mrinaal")
-
 @app.command("disk-usage")
 def disk_usage():
     """Show disk space usage for all mounted partitions.
@@ -67,3 +52,4 @@ def disk_partitions():
 
 if __name__ == "__main__":
     app()
+    
